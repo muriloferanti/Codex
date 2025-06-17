@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./cagent
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./cagent:/var/www
+    depends_on:
+      - ollama
+    working_dir: /var/www
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 2 &&
+        ollama pull mistral &&
+        wait
+      "
+volumes:
+  ollama_data:
